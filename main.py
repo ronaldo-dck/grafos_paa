@@ -77,15 +77,53 @@ def read_graph_from_file(filename):
     return n, edges, adj
 
 # 2️⃣ EXECUTAR OS ALGORITMOS
+
+import matplotlib.pyplot as plt
+import networkx as nx
+
+def plot_graph(n, mst):
+    """
+    Desenha o gráfico a partir de uma Árvore Geradora Mínima (AGM).
+    
+    :param n: Número de vértices.
+    :param mst: Lista de arestas da AGM no formato (u, v, peso).
+    """
+    G = nx.Graph()
+    
+    # Adiciona os vértices
+    G.add_nodes_from(range(n))
+    
+    # Adiciona as arestas com os pesos
+    for u, v, weight in mst:
+        G.add_edge(u, v, weight=weight)
+    
+    # Define a posição dos nós para o layout
+    pos = nx.spring_layout(G, seed=42)  # Layout para melhor visualização
+    
+    # Desenha os nós e arestas
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10)
+    
+    # Adiciona os pesos das arestas
+    edge_labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=8)
+    
+    # Exibe o gráfico
+    plt.title("Árvore Geradora Mínima")
+    plt.show()
+
+# Exemplo de uso
+# plot_graph(n, mst_kruskal)  # Para desenhar a AGM gerada pelo Kruskal
+# plot_graph(n, mst_prim)     # Para desenhar a AGM gerada pelo Prim
+
 import sys 
-filename = sys.argv[1]  
+algorithm = sys.argv[1]
+filename = sys.argv[2]  
 n, edges, adj = read_graph_from_file(filename)
 
-mst_kruskal, cost_kruskal = kruskal(n, edges)
-mst_prim, cost_prim = prim(n, adj)
+if algorithm == 'kruskal':
+    mst, cost = kruskal(n, edges)
+elif algorithm == 'prim':
+    mst, cost = prim(n, adj)
 
-print("Árvore Geradora Mínima - Kruskal:", mst_kruskal)
-print("Custo Total - Kruskal:", cost_kruskal)
-
-print("Árvore Geradora Mínima - Prim:", mst_prim)
-print("Custo Total - Prim:", cost_prim)
+# print(n,',',algorithm,',', cost,',', f'"{mst}"')
+print(cost)
